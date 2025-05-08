@@ -15,7 +15,8 @@ class Client():
             "password": password
         }
         response = self.session.post(path, data= json.dumps(body))    
-        
+        self.session.cookies.set("access_token", response.json().get('access_token'), domain= self.auth_api)
+
         return response
     
 Client("http://localhost:8000", "http://localhost:8000").authenticate_user("admin", "admin")
