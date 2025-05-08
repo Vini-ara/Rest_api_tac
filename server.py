@@ -53,7 +53,6 @@ class MyHandler(BaseHTTPRequestHandler):
         print(f"Received POST data: {post_data.decode('utf-8')}")
         post_data_obj = json.loads(post_data.decode('utf-8'))
 
-
         if self.path == '/auth':
             if (not DtoValidators.validateAuthentication(post_data_obj)):
                 self.send_response(400)
@@ -63,7 +62,7 @@ class MyHandler(BaseHTTPRequestHandler):
                 return
 
             user = db_cursor.execute("SELECT * FROM users WHERE username = ?", (post_data_obj.get('username'),)).fetchone()
-
+        
             if user is None:
                 self.send_response(401)
                 self.send_header('Content-type', 'application/json')
@@ -89,7 +88,6 @@ class MyHandler(BaseHTTPRequestHandler):
                 }
             
             jwt_token = jwt.encode(jwt_payload, os.getenv("JWT_SECRET"), algorithm='HS256')
-
             response = {
                 'message': 'Authentication successful',
                 'access_token': jwt_token
@@ -99,14 +97,12 @@ class MyHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(response).encode('utf-8'))
-
-
+    
 def run(server_class=HTTPServer, handler_class=BaseHTTPRequestHandler, port=8000):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     print(f'Starting server on port {port}...')
     httpd.serve_forever()
-
 
 config_db()
 run(handler_class=MyHandler)
