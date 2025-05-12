@@ -24,10 +24,14 @@ class MyHandler(BaseHTTPRequestHandler):
             return decoded_token  
         except jwt.ExpiredSignatureError:
             self.send_response(400)
-            self.wfile.write(b'{"Unautorized": "Token expired"}')
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(b'{"Unauthorized": "Token expired"}')
         except jwt.InvalidTokenError:
             self.send_response(400)
-            self.wfile.write(b'{"Unautorized": "Token Invalid"}')
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(b'{"Unauthorized": "Token Invalid"}')
            
 
     def do_GET(self):
@@ -36,7 +40,7 @@ class MyHandler(BaseHTTPRequestHandler):
             self.send_response(401)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(b'{"Unautorized": "Access token not found"}')
+            self.wfile.write(b'{"Unauthorized": "Access token not found"}')
 
         if(self.validate_access_token(access_token)):
             self.send_response(200)

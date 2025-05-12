@@ -6,6 +6,7 @@ import json
 import jwt
 import sqlite3
 import bcrypt
+import time
 
 load_dotenv()
 
@@ -84,9 +85,9 @@ class MyHandler(BaseHTTPRequestHandler):
 
             jwt_payload = {
                     'username': post_data_obj.get('username'),
-                    'exp': datetime.datetime.now() + datetime.timedelta(hours=1),
+                    'exp': int(time.time()) + 4 * 60 * 60,
                 }
-            
+
             jwt_token = jwt.encode(jwt_payload, os.getenv("JWT_SECRET"), algorithm='HS256')
             response = {
                 'message': 'Authentication successful',

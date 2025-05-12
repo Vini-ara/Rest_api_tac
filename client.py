@@ -17,13 +17,11 @@ class Client():
         response = self.session.post(path, data= json.dumps(body))    
         access_token = response.json().get('access_token')
         self.session.cookies.set("access_token", access_token)
-        print(self.session.cookies.get('access_token'))
 
         return response
     
     def fecht_data_api_protected(self):
         path = f"{self.data_api}"
-        print(self.session.cookies.get('access_token'))
         return self.session.get(path)
     
 client = Client("http://localhost:8000", "http://localhost:8080")
