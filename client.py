@@ -15,8 +15,17 @@ class Client():
             "password": password
         }
         response = self.session.post(path, data= json.dumps(body))    
-        self.session.cookies.set("access_token", response.json().get('access_token'), domain= self.auth_api)
+        access_token = response.json().get('access_token')
+        self.session.cookies.set("access_token", access_token)
+        print(self.session.cookies.get('access_token'))
 
         return response
     
-Client("http://localhost:8000", "http://localhost:8000").authenticate_user("admin", "admin")
+    def fecht_data_api_protected(self):
+        path = f"{self.data_api}"
+        print(self.session.cookies.get('access_token'))
+        return self.session.get(path)
+    
+client = Client("http://localhost:8000", "http://localhost:8080")
+client.authenticate_user("admin", "admin")
+print(client.fecht_data_api_protected())
