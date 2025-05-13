@@ -3,13 +3,12 @@ import requests
 import json
 
 class Client():
-    def __init__(self, auth_api_url: str, data_api_url: str) -> None:
-        self.auth_api: str = auth_api_url
-        self.data_api: str = data_api_url
+    def __init__(self, api_url: str) -> None:
+        self.api_url: str = api_url
         self.session = requests.Session()
 
     def authenticate_user(self, user: str, password: str) -> None:
-        path = f"{self.auth_api}/auth"
+        path = f"{self.api_url}/auth"
         body = {
             "username": user,
             "password": password
@@ -20,10 +19,10 @@ class Client():
 
         return response
     
-    def fecht_data_api_protected(self):
-        path = f"{self.data_api}"
+    def fecht_api_protected(self):
+        path = f"{self.api_url}/data"
         return self.session.get(path)
     
-client = Client("http://localhost:8000", "http://localhost:8080")
+client = Client("http://localhost:8000")
 client.authenticate_user("admin", "admin")
-print(client.fecht_data_api_protected())
+print(client.fecht_api_protected())
