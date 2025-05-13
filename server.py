@@ -100,7 +100,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
             jwt_payload = {
                     'username': post_data_obj.get('username'),
-                    'exp': int(time.time()) + 4 * 60 * 60,
+                    'exp': int(time.time()) + 1 * 60 * 60,
                 }
 
             jwt_token = jwt.encode(jwt_payload, os.getenv("JWT_SECRET"), algorithm='HS256')
