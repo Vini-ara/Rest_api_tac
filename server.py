@@ -1,5 +1,4 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from dotenv import load_dotenv
 import datetime
 import os
 import json
@@ -7,8 +6,21 @@ import jwt
 import sqlite3
 import bcrypt
 import time
+import ssl
 
-load_dotenv()
+def load_keys():
+    with open("keys/hmac_secret.key", "rb") as f:
+        hmac_key =  f.read().strip()
+    with open("keys/rsa_public_key.pem", "rb") as f:
+        public_key = f.read()
+    with open("keys/rsa_private_key.pem", "rb") as f:
+        private_key = f.read()
+
+    return {
+        "hmac_key": hmac_key,
+        "rsa_public_key": public_key,
+        "rsa_private_key": private_key
+    }
 
 db_connection = sqlite3.connect('app.db')
 db_cursor = db_connection.cursor()
@@ -146,8 +158,9 @@ class MyHandler(BaseHTTPRequestHandler):
                     'username': post_data_obj.get('username'),
                     'exp': int(time.time()) + 1 * 60 * 60,
                 }
-
-            private_key = open("rsa_keys/private_key.pem", "rb").read()
+            
+            keys = load_keys()
+            private_key = keys["rsa_private_key"]
             jwt_token = jwt.encode(jwt_payload, private_key, algorithm='RS256')
 
             response = {
@@ -178,8 +191,9 @@ class MyHandler(BaseHTTPRequestHandler):
             return self.validate_rsa_access_token(token)
 
     def validate_hmac_access_token(self, token):
+        secret = load_keys()["hmac_key"]
         try:
-            decoded_token = jwt.decode(token, os.getenv("JWT_SECRET"), algorithms=["HS256"])
+            decoded_token = jwt.decode(token, secret, algorithms=["HS256"])
             return decoded_token  
         except jwt.ExpiredSignatureError:
             self.send_response(400)
@@ -194,8 +208,9 @@ class MyHandler(BaseHTTPRequestHandler):
 
     
     def validate_rsa_access_token(self, token):
+        keys = load_keys()
         try:
-            public_key = open("rsa_keys/public_key.pem", "rb").read()
+            public_key = keys["rsa_public_key"]
             decoded_token = jwt.decode(token, public_key, algorithms=["RS256"])
             return decoded_token
         except jwt.ExpiredSignatureError:
@@ -216,6 +231,12 @@ class MyHandler(BaseHTTPRequestHandler):
 def run(server_class=HTTPServer, handler_class=BaseHTTPRequestHandler, port=8000):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
+    
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(certfile='keys/cert_ssl.pem', keyfile='keys/key_ssl.pem')
+
+    httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
+
     print(f'Starting server on port {port}...')
     httpd.serve_forever()
 

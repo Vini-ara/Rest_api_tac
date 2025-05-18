@@ -2,6 +2,7 @@ from requests import Session, Response
 import requests
 import json
 from os import system
+import urllib3
 
 class Client():
     def __init__(self, api_url: str) -> None:
@@ -16,7 +17,7 @@ class Client():
             "password": password
         }
 
-        response = self.session.post(path, data= json.dumps(body))    
+        response = self.session.post(path, data= json.dumps(body), verify= False)    
         access_token = response.json().get('access_token')
         self.session.cookies.set("access_token", access_token)
         self.session.cookies.set("auth_algorithm", algorithm)
@@ -25,7 +26,7 @@ class Client():
     
     def fetch_api_protected(self):
         path = f"{self.api_url}/data"
-        return self.session.get(path)
+        return self.session.get(path, verify=False)
 
 def menu():
     print("S: stop application")
@@ -52,7 +53,9 @@ def do_command(option, client: Client):
 
 
 if __name__ == "__main__":
-    client = Client("http://localhost:8000")
+    client = Client("https://localhost:8000")
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
     while(True):
         system("clear")        
@@ -62,7 +65,7 @@ if __name__ == "__main__":
         if(option=="S"):
             break
         if(option=="0"):
-            client = Client("http://localhost:8000")
+            client = Client("https://localhost:8000")
             continue
         system("clear")        
         do_command(option, client)
