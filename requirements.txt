@@ -1,2 +1,4 @@
 pyjwt==2.10.0
 bcrypt==4.3.0
+requests
+python-dotenv
