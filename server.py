@@ -113,8 +113,8 @@ class MyHandler(BaseHTTPRequestHandler):
                     'username': post_data_obj.get('username'),
                     'exp': int(time.time()) + 1 * 60 * 60,
                 }
-
-            jwt_token = jwt.encode(jwt_payload, os.getenv("JWT_SECRET"), algorithm='HS256')
+            hmac_secret = load_keys()['hmac_key']
+            jwt_token = jwt.encode(jwt_payload, hmac_secret, algorithm='HS256')
             response = {
                 'message': 'Authentication successful',
                 'access_token': jwt_token
