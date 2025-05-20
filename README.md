@@ -43,9 +43,18 @@ Run the client in another terminal:
 ```bash
 python client.py
 ```
-You will see a menu to:
-- Authenticate using RSA or HMAC
-- Fetch protected data
+### Client Commands
+When running the client, the following commands are available in the menu:
+
+- `S`: Stop application
+- `0`: Restart HTTPS client
+- `1R`: Authenticate user using RSA - PKCS signature
+- `1H`: Authenticate user using HMAC
+- `2`: Fetch protected data
+- `3`: Make a request with not valid tokens (`I` for invalids or `E` for expireds)
+
+Follow the on-screen instructions to interact with the API.
+
 
 ## Default User
 - Username: `admin`
@@ -55,4 +64,3 @@ You will see a menu to:
 - The SSL certificate is self-signed. The client disables certificate verification for testing purposes.
 - All keys and secrets are stored in the `keys/` directory (ignored by git).
 - For production, use strong secrets, secure key storage, and a trusted SSL certificate.
-
