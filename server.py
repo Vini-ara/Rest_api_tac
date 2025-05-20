@@ -59,6 +59,7 @@ class MyHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(b'{"message": "Hello, World!"}')
+
         elif(self.path == '/data'):
             access_token, algorithm = self.load_acces_token_and_algorithm()
             if(access_token is None):
@@ -205,7 +206,6 @@ class MyHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b'{"Unauthorized": "Token Invalid"}')
 
-    
     def validate_rsa_access_token(self, token):
         keys = load_keys()
         try:
@@ -224,9 +224,8 @@ class MyHandler(BaseHTTPRequestHandler):
             self.wfile.write(b'{"Unauthorized": "Token Invalid"}')
 
 
-               
 
-    
+
 def run(server_class=HTTPServer, handler_class=BaseHTTPRequestHandler, port=8000):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
