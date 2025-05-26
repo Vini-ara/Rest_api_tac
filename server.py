@@ -213,12 +213,12 @@ class MyHandler(BaseHTTPRequestHandler):
             decoded_token = jwt.decode(token, public_key, algorithms=["RS256"])
             return decoded_token
         except jwt.ExpiredSignatureError:
-            self.send_response(400)
+            self.send_response(401)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(b'{"Unauthorized": "Token expired"}')
         except jwt.InvalidTokenError:
-            self.send_response(400)
+            self.send_response(401)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(b'{"Unauthorized": "Token Invalid"}')
