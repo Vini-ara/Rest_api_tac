@@ -25,13 +25,14 @@ db_connection = sqlite3.connect('app.db')
 db_cursor = db_connection.cursor()
 
 def db_seed():
-    password = bcrypt.hashpw('admin'.encode('UTF-8'), bcrypt.gensalt())
-
-    db_cursor.execute('''
-        INSERT INTO users (username, password)
-        VALUES (?, ?)
-    ''', ('admin', password))
-    db_connection.commit()
+    user = db_cursor.execute("SELECT * FROM users WHERE username = ?", ('admin',)).fetchone()
+    if user is None:
+        password = bcrypt.hashpw('admin'.encode('UTF-8'), bcrypt.gensalt())
+        db_cursor.execute('''
+            INSERT INTO users (username, password)
+            VALUES (?, ?)
+        ''', ('admin', password))
+        db_connection.commit()
 
 def config_db():
     db_cursor.execute('''
@@ -239,4 +240,5 @@ def run(server_class=HTTPServer, handler_class=BaseHTTPRequestHandler, port=8000
     httpd.serve_forever()
 
 config_db()
+db_seed()
 run(handler_class=MyHandler)
